@@ -5,10 +5,13 @@ const PORT = 5005;
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Student = require("./models/Student.model");
+const Cohort = require("./models/Cohort.model");
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/cohort-tools-api")
-  .then((x) => console.log(`connected to db: ${x}`))
+  .then((response) =>
+    console.log(`connected to db: ${response.connections[0].name}`)
+  )
   .catch((error) => console.error("error connecting", error));
 
 // STATIC DATA
