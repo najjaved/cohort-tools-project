@@ -7,12 +7,26 @@ const mongoose = require("mongoose");
 const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
 
+/*
 mongoose
   .connect("mongodb://127.0.0.1:27017/cohort-tools-api")
   .then((response) =>
     console.log(`connected to db: ${response.connections[0].name}`)
   )
   .catch((error) => console.error("error connecting", error));
+*/
+
+// connect to database
+const connectToDB = async() => {
+  try {
+    const response = await mongoose.connect("mongodb://127.0.0.1:27017/cohort-tools-api");
+    console.log(`connected to db: ${response.connections[0].name}`);
+  } catch (error) {
+    console.log("error connecting to db: ", error);
+  }
+}
+
+connectToDB();
 
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
@@ -52,6 +66,7 @@ app.get("/docs", (req, res) => {
   res.json(students);
 }); */
 
+/*
 app.get("/api/students", (req, res) => {
   Student.find({})
     .then((students) => {
@@ -77,6 +92,33 @@ app.get("/api/cohorts", (req, res) => {
       res.status(500).json({ error: "Failed to retrieve cohorts" });
     });
 });
+*/
+
+app.get("/api/students", async (req, res) => {
+  try {
+    const students = await Student.find({});
+    console.log("Retrieved students ->", students);
+
+    res.status(200).json(students);
+  }
+  catch (error) {
+    console.log("Error retrieving students ->", error);
+    res.status(500).json({ error: "Failed to retrieve students"});
+  }
+});
+
+app.get("/api/cohorts", async (req, res) => {
+  try {
+    const cohorts = await Cohort.find({});
+    console.log("Retrieved cohorts ->", cohorts);
+
+    res.status(200).json(cohorts);
+  } catch (error) {
+    console.log("Error retrieving cohorts ->", error);
+    res.status(500).json({error: "Failed to retrieve cohorts"});
+  }
+});
+
 
 // START SERVER
 app.listen(PORT, () => {
