@@ -94,6 +94,7 @@ app.get("/api/cohorts", (req, res) => {
 });
 */
 
+// get all students
 app.get("/api/students", async (req, res) => {
   try {
     const students = await Student.find({});
@@ -107,6 +108,7 @@ app.get("/api/students", async (req, res) => {
   }
 });
 
+// get all cohorts
 app.get("/api/cohorts", async (req, res) => {
   try {
     const cohorts = await Cohort.find({});
