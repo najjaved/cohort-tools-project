@@ -215,6 +215,30 @@ app.put("/api/students/:studentId", async (req, res) => {
     res.status(500).json({ error: "Failed to update student" });
   }
 });
+
+app.delete("/api/students/:studentId", async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    // Validate studentId
+    if (!mongoose.isValidObjectId(studentId)) {
+      return res.status(400).json({ error: "Invalid studentId" });
+    }
+
+    // Find student by ID and delete
+    const deletedStudent = await Student.findByIdAndDelete(studentId);
+
+    if (!deletedStudent) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    res.json({ message: "Student deleted successfully", deletedStudent });
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    res.status(500).json({ error: "Failed to delete student" });
+  }
+});
+
 // get all cohorts
 app.get("/api/cohorts", async (req, res) => {
   try {
