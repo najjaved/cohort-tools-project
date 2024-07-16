@@ -33,9 +33,9 @@ connectToDB();
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
 // ...
-const students = require("./students.json");
+/* const students = require("./students.json");
 const cohorts = require("./cohorts.json");
-
+ */
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
 app.use(
