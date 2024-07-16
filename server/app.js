@@ -33,8 +33,8 @@ connectToDB();
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
 // ...
-const students = require("./students.json");
-const cohorts = require("./cohorts.json");
+/* const students = require("./students.json");
+const cohorts = require("./cohorts.json"); */
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
@@ -124,6 +124,44 @@ app.get("/api/students/:studentId", async (req, res) => {
   } catch (error) {
     console.log("Error retrieving student ->", error);
     res.status(500).json({ error: "Failed to retrieve student" });
+  }
+});
+//create new student
+app.post("/api/students", async (req, res) => {
+  try {
+    const {
+      fistName,
+      lastName,
+      email,
+      phone,
+      linkedinUrl,
+      languages,
+      program,
+      background,
+      image,
+      projects,
+      cohort,
+    } = req.body;
+
+    const newStudent = new Student({
+      fistName,
+      lastName,
+      email,
+      phone,
+      linkedinUrl,
+      languages,
+      program,
+      background,
+      image,
+      projects,
+      cohort,
+    });
+
+    await newStudent.save();
+    res.json(newStudent);
+  } catch (error) {
+    console.log("Error creating new Student", error);
+    res.status(500).json({ error: "failed to create new student" });
   }
 });
 
