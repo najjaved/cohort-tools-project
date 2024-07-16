@@ -113,18 +113,14 @@ app.get("/api/students", async (req, res) => {
 
 app.get("/api/students/:studentId", async (req, res) => {
   try {
-    const studentId = parseInt(req.params.studentId, 10);
+    const { studentId } = req.params;
 
-    if (isNaN(studentId)) {
-      return res.status(400).json({ error: "Invalid Id" });
+    if (!mongoose.isValidObjectId(studentId)) {
+      res.status(500).json("Invalid Id");
+    } else {
+      const studentData = await Student.findById(studentId);
+      res.json(studentData);
     }
-    const studentData = await Student.findOne({ _id: studentId });
-
-    if (!studentData) {
-      return res.status(404).json({ error: "Student not found" });
-    }
-
-    res.status(200).json(studentData);
   } catch (error) {
     console.log("Error retrieving student ->", error);
     res.status(500).json({ error: "Failed to retrieve student" });
