@@ -8,7 +8,10 @@ const studentSchema = new Schema({
   phone: Number,
   linkedinUrl: String,
   languages: [String],
-  program: String,
+  program: {
+    type: String,
+    enum: ["Web Dev", "UX/UI", "Data Analytics", "Cybersecurity"],
+  },
   background: String,
   image: String,
 
