@@ -126,6 +126,7 @@ app.get("/api/students/:studentId", async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve student" });
   }
 });
+
 //create new student
 app.post("/api/students", async (req, res) => {
   try {
@@ -138,7 +139,7 @@ app.post("/api/students", async (req, res) => {
     res.status(500).json({ error: "failed to create new student" });
   }
 });
-
+//edit existing student
 app.put("/api/students/:studentId", async (req, res) => {
   try {
     const { studentId } = req.params;
@@ -171,6 +172,7 @@ app.put("/api/students/:studentId", async (req, res) => {
   }
 });
 
+//delete student
 app.delete("/api/students/:studentId", async (req, res) => {
   try {
     const { studentId } = req.params;
@@ -192,6 +194,29 @@ app.delete("/api/students/:studentId", async (req, res) => {
   }
 });
 
+//get all students for each cohort
+
+app.get("/api/students/cohort/:cohortId", async (req, res) => {
+  const { cohortId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(cohortId)) {
+    return res.status(400).json({ error: "Invalid Cohort ID" });
+  }
+
+  try {
+    const students = await Student.find({ cohort: cohortId });
+
+    if (!students) {
+      return res.status(404).json({ error: "No students found" });
+    }
+
+    console.log("Students found: ", students);
+    res.status(200).json(students);
+  } catch (error) {
+    console.log("failed to retrieve students:", error);
+    res.status(500).json({ error });
+  }
+});
 // cohort routes
 
 // get all cohorts
