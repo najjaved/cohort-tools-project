@@ -129,36 +129,10 @@ app.get("/api/students/:studentId", async (req, res) => {
 //create new student
 app.post("/api/students", async (req, res) => {
   try {
-    const {
-      firstName,
-      lastName,
-      email,
-      phone,
-      linkedinUrl,
-      languages,
-      program,
-      background,
-      image,
-      projects,
-      cohort,
-    } = req.body;
+    const newStudent = await Student.create(req.body);
+    console.log("Student created: ", newStudent);
 
-    const newStudent = new Student({
-      firstName,
-      lastName,
-      email,
-      phone,
-      linkedinUrl,
-      languages,
-      program,
-      background,
-      image,
-      projects,
-      cohort,
-    });
-
-    await newStudent.save();
-    res.json(newStudent);
+    res.status(201).json(newStudent);
   } catch (error) {
     console.log("Error creating new Student", error);
     res.status(500).json({ error: "failed to create new student" });
@@ -169,50 +143,31 @@ app.put("/api/students/:studentId", async (req, res) => {
   try {
     const { studentId } = req.params;
 
-    const {
-      firstName,
-      lastName,
-      email,
-      phone,
-      linkedinUrl,
-      languages,
-      program,
-      background,
-      image,
-      projects,
-      cohort,
-    } = req.body;
-
     if (!mongoose.isValidObjectId(studentId)) {
       return res.status(400).json({ error: "Invalid studentId" });
     }
 
-    const updateFields = {
-      firstName,
-      lastName,
-      email,
-      phone,
-      linkedinUrl,
-      languages,
-      program,
-      background,
-      image,
-      projects,
-      cohort,
-    };
+    try {
+      const updatedStudent = await Student.findByIdAndUpdate(
+        studentId,
+        req.body,
+        { new: true }
+      );
 
-    const updatedStudent = await Student.findByIdAndUpdate(
-      studentId,
-      updateFields
-    );
-    if (!updatedStudent) {
-      return res.status(404).json({ error: "Student not found" });
+      if (!updatedStudent) {
+        return res.status(404).json({ error: "Student not found" });
+      }
+
+      console.log("Updated student: ", updatedStudent);
+
+      res.status(200).json(updatedStudent); // Changed status code to 200 for successful update
+    } catch (error) {
+      console.log("Error updating student: ", error);
+      res.status(500).json({ error: "Failed to update student" });
     }
-
-    res.json(updatedStudent);
   } catch (error) {
-    console.error("Error updating student:", error);
-    res.status(500).json({ error: "Failed to update student" });
+    console.error("Error validating studentId:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -220,12 +175,10 @@ app.delete("/api/students/:studentId", async (req, res) => {
   try {
     const { studentId } = req.params;
 
-    // Validate studentId
     if (!mongoose.isValidObjectId(studentId)) {
       return res.status(400).json({ error: "Invalid studentId" });
     }
 
-    // Find student by ID and delete
     const deletedStudent = await Student.findByIdAndDelete(studentId);
 
     if (!deletedStudent) {
@@ -238,7 +191,6 @@ app.delete("/api/students/:studentId", async (req, res) => {
     res.status(500).json({ error: "Failed to delete student" });
   }
 });
-
 
 // cohort routes
 
@@ -260,7 +212,7 @@ app.get("/api/cohorts/:cohortId", async (req, res) => {
   const { cohortId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(cohortId)) {
-    return res.status(400).json({error: "Invalid ID"});
+    return res.status(400).json({ error: "Invalid ID" });
   }
 
   try {
@@ -275,9 +227,9 @@ app.get("/api/cohorts/:cohortId", async (req, res) => {
     res.status(200).json(cohort);
   } catch (error) {
     console.log("Error finding cohort: ", error);
-    res.status(500).json({error: "Failed to find cohort"})
+    res.status(500).json({ error: "Failed to find cohort" });
   }
-}); 
+});
 
 // create new cohort
 app.post("/api/cohorts", async (req, res) => {
@@ -286,10 +238,9 @@ app.post("/api/cohorts", async (req, res) => {
     console.log("Cohort created: ", newCohort);
 
     res.status(201).json(newCohort);
-
   } catch (error) {
     console.log("error creating cohort: ", error);
-    res.status(500).json({error: "Failed to create cohort"});
+    res.status(500).json({ error: "Failed to create cohort" });
   }
 });
 
@@ -298,11 +249,13 @@ app.put("/api/cohorts/:cohortId", async (req, res) => {
   const { cohortId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(cohortId)) {
-    return res.status(400).json({error: "Invalid ID"});
+    return res.status(400).json({ error: "Invalid ID" });
   }
 
   try {
-    const updatedCohort = await Cohort.findByIdAndUpdate(cohortId, req.body, {new: true});
+    const updatedCohort = await Cohort.findByIdAndUpdate(cohortId, req.body, {
+      new: true,
+    });
 
     if (!updatedCohort) {
       return res.status(404).json({ error: "Cohort not found" });
@@ -313,7 +266,7 @@ app.put("/api/cohorts/:cohortId", async (req, res) => {
     res.status(201).json(updatedCohort);
   } catch (error) {
     console.log("Error updating cohort: ", error);
-    res.status(500).json({error: "Failed to update cohort"})
+    res.status(500).json({ error: "Failed to update cohort" });
   }
 });
 
@@ -322,7 +275,7 @@ app.delete("/api/cohorts/:cohortId", async (req, res) => {
   const { cohortId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(cohortId)) {
-    return res.status(400).json({error: "Invalid ID"});
+    return res.status(400).json({ error: "Invalid ID" });
   }
 
   try {
@@ -332,13 +285,12 @@ app.delete("/api/cohorts/:cohortId", async (req, res) => {
       return res.status(404).json({ error: "Cohort not found" });
     }
 
-    console.log("Cohort deleted")
+    console.log("Cohort deleted");
 
     res.status(204).send();
-
   } catch (error) {
     console.log("Error deleting cohort: ", error);
-    res.status(500).json({error: "Failed to delete cohort"})
+    res.status(500).json({ error: "Failed to delete cohort" });
   }
 });
 
