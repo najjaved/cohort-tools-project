@@ -165,6 +165,56 @@ app.post("/api/students", async (req, res) => {
   }
 });
 
+app.put("/api/students/:studentId", async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      linkedinUrl,
+      languages,
+      program,
+      background,
+      image,
+      projects,
+      cohort,
+    } = req.body;
+
+    if (!mongoose.isValidObjectId(studentId)) {
+      return res.status(400).json({ error: "Invalid studentId" });
+    }
+
+    const updateFields = {
+      firstName,
+      lastName,
+      email,
+      phone,
+      linkedinUrl,
+      languages,
+      program,
+      background,
+      image,
+      projects,
+      cohort,
+    };
+
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      updateFields
+    );
+    if (!updatedStudent) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    res.json(updatedStudent);
+  } catch (error) {
+    console.error("Error updating student:", error);
+    res.status(500).json({ error: "Failed to update student" });
+  }
+});
 // get all cohorts
 app.get("/api/cohorts", async (req, res) => {
   try {
