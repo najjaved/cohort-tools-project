@@ -17,14 +17,16 @@ mongoose
 */
 
 // connect to database
-const connectToDB = async() => {
+const connectToDB = async () => {
   try {
-    const response = await mongoose.connect("mongodb://127.0.0.1:27017/cohort-tools-api");
+    const response = await mongoose.connect(
+      "mongodb://127.0.0.1:27017/cohort-tools-api"
+    );
     console.log(`connected to db: ${response.connections[0].name}`);
   } catch (error) {
     console.log("error connecting to db: ", error);
   }
-}
+};
 
 connectToDB();
 
@@ -101,10 +103,31 @@ app.get("/api/students", async (req, res) => {
     console.log("Retrieved students ->", students);
 
     res.status(200).json(students);
-  }
-  catch (error) {
+  } catch (error) {
     console.log("Error retrieving students ->", error);
-    res.status(500).json({ error: "Failed to retrieve students"});
+    res.status(500).json({ error: "Failed to retrieve students" });
+  }
+});
+
+//get individual studentData
+
+app.get("/api/students/:studentId", async (req, res) => {
+  try {
+    const studentId = parseInt(req.params.studentId, 10);
+
+    if (isNaN(studentId)) {
+      return res.status(400).json({ error: "Invalid Id" });
+    }
+    const studentData = await Student.findOne({ _id: studentId });
+
+    if (!studentData) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    res.status(200).json(studentData);
+  } catch (error) {
+    console.log("Error retrieving student ->", error);
+    res.status(500).json({ error: "Failed to retrieve student" });
   }
 });
 
@@ -117,10 +140,9 @@ app.get("/api/cohorts", async (req, res) => {
     res.status(200).json(cohorts);
   } catch (error) {
     console.log("Error retrieving cohorts ->", error);
-    res.status(500).json({error: "Failed to retrieve cohorts"});
+    res.status(500).json({ error: "Failed to retrieve cohorts" });
   }
 });
-
 
 // START SERVER
 app.listen(PORT, () => {
