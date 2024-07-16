@@ -66,6 +66,10 @@ app.get("/api/students/:studentId", async (req, res) => {
       res.status(500).json("Invalid Id");
     } else {
       const studentData = await Student.findById(studentId).populate("cohort");
+
+      if (!studentData) {
+        return res.status(404).json({ error: "No Students" });
+      }
       res.json(studentData);
     }
   } catch (error) {
