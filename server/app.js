@@ -239,6 +239,9 @@ app.delete("/api/students/:studentId", async (req, res) => {
   }
 });
 
+
+// cohort routes
+
 // get all cohorts
 app.get("/api/cohorts", async (req, res) => {
   try {
@@ -249,6 +252,93 @@ app.get("/api/cohorts", async (req, res) => {
   } catch (error) {
     console.log("Error retrieving cohorts ->", error);
     res.status(500).json({ error: "Failed to retrieve cohorts" });
+  }
+});
+
+// get one cohort by id
+app.get("/api/cohorts/:cohortId", async (req, res) => {
+  const { cohortId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(cohortId)) {
+    return res.status(400).json({error: "Invalid ID"});
+  }
+
+  try {
+    const cohort = await Cohort.findById(cohortId);
+
+    if (!cohort) {
+      return res.status(404).json({ error: "Cohort not found" });
+    }
+
+    console.log("Cohort found: ", cohort);
+
+    res.status(200).json(cohort);
+  } catch (error) {
+    console.log("Error finding cohort: ", error);
+    res.status(500).json({error: "Failed to find cohort"})
+  }
+}); 
+
+// create new cohort
+app.post("/api/cohorts", async (req, res) => {
+  try {
+    const newCohort = await Cohort.create(req.body);
+    console.log("Cohort created: ", newCohort);
+
+    res.status(201).json(newCohort);
+
+  } catch (error) {
+    console.log("error creating cohort: ", error);
+    res.status(500).json({error: "Failed to create cohort"});
+  }
+});
+
+// update one cohort by id
+app.put("/api/cohorts/:cohortId", async (req, res) => {
+  const { cohortId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(cohortId)) {
+    return res.status(400).json({error: "Invalid ID"});
+  }
+
+  try {
+    const updatedCohort = await Cohort.findByIdAndUpdate(cohortId, req.body, {new: true});
+
+    if (!updatedCohort) {
+      return res.status(404).json({ error: "Cohort not found" });
+    }
+
+    console.log("Updated cohort: ", updatedCohort);
+
+    res.status(201).json(updatedCohort);
+  } catch (error) {
+    console.log("Error updating cohort: ", error);
+    res.status(500).json({error: "Failed to update cohort"})
+  }
+});
+
+// delete cohort by id
+app.delete("/api/cohorts/:cohortId", async (req, res) => {
+  const { cohortId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(cohortId)) {
+    return res.status(400).json({error: "Invalid ID"});
+  }
+
+  try {
+    const deletedCohort = await Cohort.findByIdAndDelete(cohortId);
+
+    if (!deletedCohort) {
+      return res.status(404).json({ error: "Cohort not found" });
+    }
+
+    console.log("Cohort deleted")
+
+    res.status(204).send();
+
+  } catch (error) {
+    console.log("Error deleting cohort: ", error);
+    res.status(500).json({error: "Failed to delete cohort"})
   }
 });
 
