@@ -130,7 +130,7 @@ app.get("/api/students/:studentId", async (req, res) => {
 app.post("/api/students", async (req, res) => {
   try {
     const {
-      fistName,
+      firstName,
       lastName,
       email,
       phone,
@@ -144,7 +144,7 @@ app.post("/api/students", async (req, res) => {
     } = req.body;
 
     const newStudent = new Student({
-      fistName,
+      firstName,
       lastName,
       email,
       phone,
