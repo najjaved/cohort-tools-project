@@ -2,6 +2,18 @@ const Cohort = require("../models/Cohort.model")
 const { default: mongoose } = require("mongoose")
 const router = require("express").Router()
 
+const { httpGetAll, httpGetOne } = require("../helpers/httpMethods")
+
+router.get("/", (req, res, next) => { 
+    httpGetAll(Cohort, res, next, "cohort");
+});
+
+router.get("/:cohortId", (req, res, next) => { 
+    const { cohortId } = req.params;
+    httpGetOne(Cohort, res, next, cohortId, "cohort");
+})
+
+/*
 router.get("/", async (req, res, next) => {
     try {
         const cohorts = await Cohort.find()
@@ -10,6 +22,7 @@ router.get("/", async (req, res, next) => {
         next(error)
     }
 })
+
 
 router.get("/:cohortId", async (req, res, next) => {
     const { cohortId } = req.params;
@@ -29,7 +42,7 @@ router.get("/:cohortId", async (req, res, next) => {
         next(error)
     }
 })
-
+*/
 router.post("/", async (req, res, next) => {
     try {
         const newCohort = await Cohort.create(req.body)

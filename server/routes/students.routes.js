@@ -2,7 +2,17 @@ const Student = require("../models/Student.model")
 const { default: mongoose } = require("mongoose")
 const router = require("express").Router()
 
+const { httpGetAll, httpGetOne } = require("../helpers/httpMethods")
 
+router.get("/", (req, res, next) => {
+    httpGetAll(Student, res, next, "student");
+})
+
+router.get("/:studentId", (req, res, next) => {
+    const { studentId } = req.params;
+    httpGetOne(Student, res, next, studentId, "student");
+})
+/*
 router.get("/", async (req, res, next) => {
     try {
         const students = await Student.find().populate("cohort")
@@ -30,7 +40,7 @@ router.get("/:studentId", async (req, res, next) => {
         next(error)
     }
 })
-
+*/
 router.post("/", async (req, res, next) => {
     console.log(req.body)
     try {

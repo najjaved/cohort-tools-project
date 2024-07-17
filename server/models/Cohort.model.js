@@ -5,31 +5,31 @@ const cohortSchema = new Schema({
   inProgress: Boolean,
   cohortSlug: {
     type: String,
-    required: true,
+    required: [true, "field required"],
     trim: true,
   },
   cohortName: {
     type: String,
-    required: true,
+    required: [true, "field required"],
     trim: true,
   },
   program: {
     type: String,
-    required: true,
+    required: [true, "field required"],
     trim: true,
   },
   campus: {
     type: String,
-    required: true,
+    required: [true, "field required"],
     trim: true,
   },
   startDate: {
     type: Date,
-    required: true,
+    required: [true, "field required"],
   },
   endDate: {
     type: Date,
-    required: true,
+    required: [true, "field required"],
   },
   programManager: {
     type: String,

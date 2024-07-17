@@ -1,12 +1,10 @@
 const express = require("express");
-const morgan = require("morgan");
+const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const PORT = 5005;
 const cors = require("cors");
 const mongoose = require("mongoose");
-const Student = require("./models/Student.model");
-const Cohort = require("./models/Cohort.model");
-
+const { errorHandler, notFoundHandler } = require("./middleware/error-handling")
 
 // connect to database
 const connectToDB = async () => {
@@ -32,45 +30,22 @@ app.use(
     origin: ["http://localhost:5173"],
   })
 );
-
 app.use(express.json());
-app.use(morgan("dev"));
+app.use(logger("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// routes
 app.use('/api', indexRoutes)
 
-// ROUTES - https://expressjs.com/en/starter/basic-routing.html
-// Devs Team - Start working on the routes here:
-// ...
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
 });
 
-// get all students - 
-
-//get individual studentData -
-
-//get all students for each cohort
-
-//create new student
-
-//edit existing student
-
-//delete student
-
-// cohort routes
-
-// get all cohorts
-
-// get one cohort by id
-
-
-// create new cohort
-
-// update one cohort by id
-
-// delete cohort by id
+// handle not found and errors
+app.use(notFoundHandler)
+app.use(errorHandler)
 
 // START SERVER
 app.listen(PORT, () => {
