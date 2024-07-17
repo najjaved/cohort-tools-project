@@ -5,7 +5,7 @@ const router = require("express").Router()
 
 router.get("/", async (req, res, next) => {
     try {
-        const students = await Student.find()
+        const students = await Student.find().populate("cohort")
         res.status(200).json(students)
     } catch (error) {
         next(error)
@@ -15,13 +15,13 @@ router.get("/", async (req, res, next) => {
 router.get("/:studentId", async (req, res, next) => {
     const { studentId } = req.params;
     if (!mongoose.isValidObjectId(studentId)) {
-        throw new Error("Invalid Id")
+        return next(new Error("Invalid Id"));
     }
     try {
-        const student = await Student.findById(studentId);
+        const student = await Student.findById(studentId).populate("cohort");
 
         if (!student) {
-            return res.status(404).json({ error: "Student not found" });
+            throw new Error("student not found");
         }
 
         res.status(200).json(student)
@@ -37,15 +37,14 @@ router.post("/", async (req, res, next) => {
         const newStudent = await Student.create(req.body)
         res.status(201).json(newStudent)
     } catch (error) {
-        console.log("Error:", error)
-        next()
+        next(error)
     }
 })
 
 router.put("/:studentId", async (req, res, next) => {
     const { studentId } = req.params
     if (!mongoose.isValidObjectId(studentId)) {
-        throw new Error("Invalid Id")
+        next(new Error("Invalid Id"));
     }
     try {
         const updatedStudent = await Student.findByIdAndUpdate(studentId,
@@ -79,7 +78,7 @@ router.delete("/:studentId", async (req, res, next) => {
         const deletedStudent = await Student.findByIdAndDelete(studentId);
 
         if (!deletedStudent) {
-            return res.status(404).json({ error: "Student not found" });
+            return next(new Error("student not found"));
         }
 
         res.status(204).send();

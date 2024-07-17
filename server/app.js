@@ -32,12 +32,13 @@ app.use(
     origin: ["http://localhost:5173"],
   })
 );
-app.use('/api', indexRoutes)
+
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use('/api', indexRoutes)
 
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
 // Devs Team - Start working on the routes here:

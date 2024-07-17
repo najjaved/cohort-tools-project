@@ -10,6 +10,6 @@ const studentsRoutes = require("./students.routes")
 router.use("/students", studentsRoutes)
 
 const cohortsRoutes = require("./cohorts.routes")
-router.use("/cohort", cohortsRoutes)
+router.use("/cohorts", cohortsRoutes)
 
 module.exports = router

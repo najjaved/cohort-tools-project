@@ -11,11 +11,26 @@ router.get("/", async (req, res, next) => {
     }
 })
 
-router.get("/:cohortId", (req, res) => {
-    res.json(`Here is my ${req.params.cohortId}`)
+router.get("/:cohortId", async (req, res, next) => {
+    const { cohortId } = req.params;
+    if (!mongoose.isValidObjectId(cohortId)) {
+        return next(new Error("invalid ID"))
+    }
+    try {
+        const cohort = await Cohort.findById(cohortId);
+
+        if (!cohort) {
+            return next(new Error("cohort not found"))
+        }
+
+        res.status(200).json(cohort)
+    }
+    catch (error) {
+        next(error)
+    }
 })
 
-router.post("/cohorts", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
     try {
         const newCohort = await Cohort.create(req.body)
         res.status(201).json(newCohort)
@@ -28,7 +43,7 @@ router.post("/cohorts", async (req, res, next) => {
 router.put("/:cohortId", async (req, res, next) => {
     const { cohortId } = req.params
     if (!mongoose.isValidObjectId(cohortId)) {
-        throw new Error("Invalid Id")
+        return next(new Error("invalid ID"));
     }
     try {
         const updatedCohort = await Cohort.findByIdAndUpdate(cohortId,
@@ -40,7 +55,7 @@ router.put("/:cohortId", async (req, res, next) => {
         );
 
         if (!updatedCohort) {
-            return res.status(404).json({ error: "Cohort not found" });
+           return next(new Error("cohort not found"));
         }
 
         res.status(200).json(updatedCohort)
@@ -56,13 +71,13 @@ router.delete("/:cohortId", async (req, res, next) => {
 
     try {
         if (!mongoose.isValidObjectId(cohortId)) {
-            throw new Error("Invalid cohortId");
+            return next(new Error("Invalid ID"));
         }
 
         const deletedCohort = await Cohort.findByIdAndDelete(cohortId);
 
         if (!deletedCohort) {
-            return res.status(404).json({ error: "Cohort not found" });
+            return next(new Error("cohort not found"));
         }
 
         res.status(204).send();
