@@ -38,8 +38,65 @@ const httpGetOne = async(Model, res, next, id, type) => {
     }
 }
 
+// create new student or cohort
+const httpPost = async (Model, req, res, next) => {
+    try {
+        const newData = await Model.create(req.body)
+        res.status(201).json(newData)
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+// update student or cohort
+const httpPut = async(Model, req, res, next, id, type) => {
+    if (!mongoose.isValidObjectId(id)) {
+        return next(new Error("invalid ID"));
+    }
+    try {
+        const updatedData = await Model.findByIdAndUpdate(id ,
+            req.body,
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!updatedData) {
+           return next(new Error(`${type} not found`));
+        }
+
+        res.status(200).json(updatedData)
+    }
+    catch (error) {
+        next(error)
+    }
+}
+
+// delete a student or cohort
+const httpDelete = async(Model, res, next, id, type) => {
+
+    if (!mongoose.isValidObjectId(id)) {
+        next(new Error("Invalid ID"));
+    }
+    try {
+        const deletedData = await Model.findByIdAndDelete(id);
+
+        if (!deletedData) {
+            return next(new Error(`${type} not found`));
+        }
+
+        res.status(204).send();
+    } catch (error) {
+        next(error);
+    }
+}
 
 module.exports = {
     httpGetAll,
-    httpGetOne
+    httpGetOne,
+    httpPost,
+    httpPut,
+    httpDelete
 }

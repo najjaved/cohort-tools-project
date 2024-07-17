@@ -1,8 +1,13 @@
 const Student = require("../models/Student.model")
-const { default: mongoose } = require("mongoose")
 const router = require("express").Router()
 
-const { httpGetAll, httpGetOne } = require("../helpers/httpMethods")
+const { 
+    httpGetAll, 
+    httpGetOne,
+    httpPost,
+    httpPut,
+    httpDelete
+ } = require("../helpers/httpMethods")
 
 router.get("/", (req, res, next) => {
     httpGetAll(Student, res, next, "student");
@@ -12,89 +17,19 @@ router.get("/:studentId", (req, res, next) => {
     const { studentId } = req.params;
     httpGetOne(Student, res, next, studentId, "student");
 })
-/*
-router.get("/", async (req, res, next) => {
-    try {
-        const students = await Student.find().populate("cohort")
-        res.status(200).json(students)
-    } catch (error) {
-        next(error)
-    }
+
+router.post("/", (req, res, next) => {
+    httpPost(Student, req, res, next);
 })
 
-router.get("/:studentId", async (req, res, next) => {
+router.put("/:studentId", (req, res, next) => {
     const { studentId } = req.params;
-    if (!mongoose.isValidObjectId(studentId)) {
-        return next(new Error("Invalid Id"));
-    }
-    try {
-        const student = await Student.findById(studentId).populate("cohort");
-
-        if (!student) {
-            throw new Error("student not found");
-        }
-
-        res.status(200).json(student)
-    }
-    catch (error) {
-        next(error)
-    }
+    httpPut(Student, req, res, next, studentId, "student");
 })
-*/
-router.post("/", async (req, res, next) => {
-    console.log(req.body)
-    try {
-        const newStudent = await Student.create(req.body)
-        res.status(201).json(newStudent)
-    } catch (error) {
-        next(error)
-    }
-})
-
-router.put("/:studentId", async (req, res, next) => {
-    const { studentId } = req.params
-    if (!mongoose.isValidObjectId(studentId)) {
-        next(new Error("Invalid Id"));
-    }
-    try {
-        const updatedStudent = await Student.findByIdAndUpdate(studentId,
-            req.body,
-            {
-                new: true,
-                runValidators: true
-            }
-        );
-
-        if (!updatedStudent) {
-            return next(new Error("Student not found"))
-        }
-
-        res.status(200).json(updatedStudent)
-    }
-    catch (error) {
-        next(error)
-    }
-})
-
 
 router.delete("/:studentId", async (req, res, next) => {
     const { studentId } = req.params;
-
-    try {
-        if (!mongoose.isValidObjectId(studentId)) {
-            throw new Error("Invalid studentId");
-        }
-
-        const deletedStudent = await Student.findByIdAndDelete(studentId);
-
-        if (!deletedStudent) {
-            return next(new Error("student not found"));
-        }
-
-        res.status(204).send();
-    } catch (error) {
-        next(error);
-    }
-});
+    httpDelete(Student, res, next, studentId, "student");
+})
 
 module.exports = router
