@@ -2,7 +2,7 @@ const User = require('../models/User.model')
 const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken")
 const { isAuthenticated } = require('../middleware/route-guard.middleware')
-
+require("dotenv").config()
 const router = require('express').Router()
 // All routes starts with /auth
 router.get('/', (req, res) => {
@@ -37,7 +37,7 @@ router.post("/login", async (req, res, next) => {
         if (potentialUser) {
             // User has correct credentials
             if (bcrypt.compareSync(password, potentialUser.passwordHash)) {
-                const token = jtw.sign({ userId: potentialUser._id }, process.env.TOKEN_SECRET)
+                const token = jwt.sign({ userId: potentialUser._id }, process.env.TOKEN_SECRET)
                 res.json({ token })
             } else {
                 res.status(403).json({ message: "Incorrect password" })
@@ -53,7 +53,7 @@ router.post("/login", async (req, res, next) => {
 // GET Verify
 
 router.get("/verify", isAuthenticated, (req, res, next) => {
-
+    res.status(200).json(req.payload);
 })
 
 module.exports = router

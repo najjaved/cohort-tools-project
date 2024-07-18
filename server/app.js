@@ -23,6 +23,7 @@ connectToDB();
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
 const indexRoutes = require("./routes/index.routes")
+const authRoutes = require("./routes/auth.routes")
 
 // MIDDLEWARE
 app.use(
@@ -38,6 +39,7 @@ app.use(cookieParser());
 
 // routes
 app.use('/api', indexRoutes)
+app.use("/auth", authRoutes)
 
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
