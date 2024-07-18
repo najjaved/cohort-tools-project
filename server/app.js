@@ -24,6 +24,7 @@ connectToDB();
 const app = express();
 const indexRoutes = require("./routes/index.routes")
 const authRoutes = require("./routes/auth.routes")
+const userRoutes = require("./routes/user.routes")
 
 // MIDDLEWARE
 app.use(
@@ -40,6 +41,7 @@ app.use(cookieParser());
 // routes
 app.use('/api', indexRoutes)
 app.use("/auth", authRoutes)
+app.use("/api", userRoutes)
 
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");

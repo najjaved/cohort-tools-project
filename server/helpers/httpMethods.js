@@ -1,31 +1,31 @@
 const { default: mongoose } = require("mongoose")
 
 // get all students or cohorts
-const httpGetAll = async(Model, res, next, type) => {
+const httpGetAll = async (Model, res, next, type) => {
     try {
         let data;
         type === "cohort" ?
-        data = await Model.find() :
-        data = await Model.find().populate("cohort");
+            data = await Model.find() :
+            data = await Model.find().populate("cohort");
 
         res.status(200).json(data);
     }
-    catch(error) {
+    catch (error) {
         next(error)
     }
 }
 
 // get one student or cohort
-const httpGetOne = async(Model, res, next, id, type) => {
+const httpGetOne = async (Model, res, next, id, type) => {
     if (!mongoose.isValidObjectId(id)) {
         return next(new Error("invalid ID"))
     }
     try {
         let data;
 
-        type === "cohort" ?
-        data = await Model.findById(id) :
-        data = await Model.findById(id).populate("cohort")
+        type === "student" ?
+            data = await Model.findById(id).populate("cohort") :
+            data = await Model.findById(id)
 
         if (!data) {
             return next(new Error(`${type} not found`))
@@ -50,12 +50,12 @@ const httpPost = async (Model, req, res, next) => {
 
 
 // update student or cohort
-const httpPut = async(Model, req, res, next, id, type) => {
+const httpPut = async (Model, req, res, next, id, type) => {
     if (!mongoose.isValidObjectId(id)) {
         return next(new Error("invalid ID"));
     }
     try {
-        const updatedData = await Model.findByIdAndUpdate(id ,
+        const updatedData = await Model.findByIdAndUpdate(id,
             req.body,
             {
                 new: true,
@@ -64,7 +64,7 @@ const httpPut = async(Model, req, res, next, id, type) => {
         );
 
         if (!updatedData) {
-           return next(new Error(`${type} not found`));
+            return next(new Error(`${type} not found`));
         }
 
         res.status(200).json(updatedData)
@@ -75,7 +75,7 @@ const httpPut = async(Model, req, res, next, id, type) => {
 }
 
 // delete a student or cohort
-const httpDelete = async(Model, res, next, id, type) => {
+const httpDelete = async (Model, res, next, id, type) => {
 
     if (!mongoose.isValidObjectId(id)) {
         next(new Error("Invalid ID"));
