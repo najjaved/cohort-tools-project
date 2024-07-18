@@ -5,6 +5,7 @@ const PORT = 5005;
 const cors = require("cors");
 const mongoose = require("mongoose");
 const { errorHandler, notFoundHandler } = require("./middleware/error-handling")
+const helmet = require("helmet")
 
 // connect to database
 const connectToDB = async () => {
@@ -37,6 +38,8 @@ app.use(logger("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(helmet())
+app.disable('x-powered-by')
 
 // routes
 app.use('/api', indexRoutes)
